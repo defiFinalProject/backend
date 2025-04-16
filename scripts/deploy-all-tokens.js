@@ -40,7 +40,7 @@ async function main() {
   }
 
   // ✅ ✅ ✅ 手动给你当前使用的 MetaMask 地址发 100 个 TokenA/B/C
-  const myMetaMaskAddress = "0xdD2FD4581271e230360230F9337D5c0430Bf44C0"; // 👈 你导入的账户
+  const myMetaMaskAddress = "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc"; // 👈 你导入的账户
   await tokenA.transfer(myMetaMaskAddress, sendAmount);
   await tokenB.transfer(myMetaMaskAddress, sendAmount);
   await tokenC.transfer(myMetaMaskAddress, sendAmount);
