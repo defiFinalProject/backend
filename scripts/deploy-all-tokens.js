@@ -1,50 +1,58 @@
 const { ethers } = require("hardhat");
 
 async function main() {
-  const initialSupply = ethers.parseEther("1000000"); // 初始供应：100万个代币
+  const initialSupply = ethers.parseEther("1000000"); // 初始总供应量
+  const sendAmount = ethers.parseEther("100"); // 每人发放 100 个 Token
 
-  // 获取本地测试账户
-  const signers = await ethers.getSigners();
+  // 指定要发送的地址（从你提供的 Account #0~#19 中复制）
+  const recipientAddresses = [
+    "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+    "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+    "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+    "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+    "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+    "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
+    "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+    "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f",
+    "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+    "0xBcd4042DE499D14e55001CcbB24a551F3b954096",
+    "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+    "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+    "0x1CBd3b2770909D4e10f157cABC84C7264073C9Ec",
+    "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+    "0xcd3B766CCDd6AE721141F452C550Ca635964ce71",
+    "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+    "0xbDA5747bFD65F08deb54cb465eB87D40e51B197E",
+    "0xdD2FD4581271e230360230F9337D5c0430Bf44C0",
+    "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199",
+  ];
 
-  // ✅ 打印所有测试账户地址（用于在 MetaMask 中手动切换）
-  console.log("📢 所有测试账户地址：");
-  signers.forEach((s, i) => console.log(`signer[${i}]: ${s.address}`));
-
-  const recipients = signers.slice(1); // 第一个是部署者，我们给其余的账户发币
-  const sendAmount = ethers.parseEther("100"); // 每人 100 个代币
-
-  // 1. 部署 TokenA
+  // 部署 TokenA
   const TokenA = await ethers.getContractFactory("TokenA");
   const tokenA = await TokenA.deploy(initialSupply);
   await tokenA.waitForDeployment();
   console.log(`✅ TokenA 部署成功，地址: ${tokenA.target}`);
 
-  // 2. 部署 TokenB
+  // 部署 TokenB
   const TokenB = await ethers.getContractFactory("TokenB");
   const tokenB = await TokenB.deploy(initialSupply);
   await tokenB.waitForDeployment();
   console.log(`✅ TokenB 部署成功，地址: ${tokenB.target}`);
 
-  // 3. 部署 TokenC
+  // 部署 TokenC
   const TokenC = await ethers.getContractFactory("TokenC");
   const tokenC = await TokenC.deploy(initialSupply);
   await tokenC.waitForDeployment();
   console.log(`✅ TokenC 部署成功，地址: ${tokenC.target}`);
 
-  // 4. 分发 token 给所有账户（除部署者）
-  for (const recipient of recipients) {
-    await tokenA.transfer(recipient.address, sendAmount);
-    await tokenB.transfer(recipient.address, sendAmount);
-    await tokenC.transfer(recipient.address, sendAmount);
-    console.log(`🎁 已发送 100 TokenA/B/C 给 ${recipient.address}`);
+  // 给每个指定地址发 Token
+  for (const address of recipientAddresses) {
+    await tokenA.transfer(address, sendAmount);
+    await tokenB.transfer(address, sendAmount);
+    await tokenC.transfer(address, sendAmount);
+    console.log(`🎁 已发送 100 TokenA/B/C 给 ${address}`);
   }
-
-  // ✅ ✅ ✅ 手动给你当前使用的 MetaMask 地址发 100 个 TokenA/B/C
-  const myMetaMaskAddress = "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc"; // 👈 你导入的账户
-  await tokenA.transfer(myMetaMaskAddress, sendAmount);
-  await tokenB.transfer(myMetaMaskAddress, sendAmount);
-  await tokenC.transfer(myMetaMaskAddress, sendAmount);
-  console.log(`🎁 已额外发送 100 TokenA/B/C 给你的 MetaMask 地址：${myMetaMaskAddress}`);
 
   console.log("🎉 所有代币分发完成！");
 }
